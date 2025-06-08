@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import io
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import train_test_split
@@ -34,9 +35,10 @@ st.subheader("Statistik Deskriptif")
 st.write(dataset.describe())
 
 st.subheader("Informasi Dataset")
-buffer = []
-dataset.info(buf=buffer.append)
-st.text('\n'.join(buffer))
+buffer = io.StringIO()
+dataset.info(buf=buffer)
+info_str = buffer.getvalue()
+st.text(info_str)
 
 # -----------------------------
 # SECTION 2: Histogram Distribusi
@@ -96,6 +98,11 @@ st.dataframe(pd.DataFrame(kmeans.cluster_centers_, columns=X_cluster.columns))
 # -----------------------------
 st.header("5. Logistic Regression")
 
+# Encode Retention_Status jika belum ada encoding
+if 'Retention_Status_Encoded' not in dataset.columns and 'Retention_Status' in dataset.columns:
+    le = LabelEncoder()
+    dataset['Retention_Status_Encoded'] = le.fit_transform(dataset['Retention_Status'])
+
 if 'Retention_Status_Encoded' in dataset.columns:
     y = dataset['Retention_Status_Encoded']
     X = dataset.drop(columns=['Retention_Status_Encoded', 'Customer_ID', 'Gender', 'Location', 'Retention_Status', 'Cluster'], errors='ignore')
@@ -117,7 +124,7 @@ if 'Retention_Status_Encoded' in dataset.columns:
 
     # Classification Report
     st.subheader("Classification Report")
-    report = classification_report(y_test, y_pred, output_dict=False)
+    report = classification_report(y_test, y_pred)
     st.text(report)
 else:
     st.warning("Kolom 'Retention_Status_Encoded' tidak ditemukan pada dataset.")
