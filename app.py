@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import io
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -32,9 +33,10 @@ if uploaded_file is not None:
     st.write(dataset.describe())
 
     st.subheader("🔍 Informasi Dataset")
-    buffer = []
-    dataset.info(buf=buffer.append)
-    st.text('\n'.join(buffer))
+    buffer = io.StringIO()
+    dataset.info(buf=buffer)
+    s = buffer.getvalue()
+    st.text(s)
 
     # ------------------------------------
     # SECTION 2: Histogram Distribusi
@@ -146,5 +148,6 @@ if uploaded_file is not None:
                 st.text(report)
         else:
             st.warning("❗ Kolom 'Retention_Status_Encoded' tidak ditemukan di dataset.")
+
 
 
