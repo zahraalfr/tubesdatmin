@@ -94,3 +94,4 @@ if uploaded_file is not None:
 else:
     st.info("Silakan upload file dataset CSV terlebih dahulu.")
 
+
